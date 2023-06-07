@@ -1,4 +1,4 @@
-# Simple Todos App with Reac Query
+# Simple Todos App with React Query
 
 This project is just a simple todo app using React Query for learning purposes.
 
