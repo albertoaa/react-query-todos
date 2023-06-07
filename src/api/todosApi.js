@@ -5,7 +5,7 @@ const todosApi = axios.create({
 });
 
 export const getTodos = async () => {
-  const response = todosApi.get('/todos');
+  const response = await todosApi.get('/todos');
   return response.data;
 };
 
