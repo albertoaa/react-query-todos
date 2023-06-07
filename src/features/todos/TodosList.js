@@ -9,26 +9,31 @@ const TodosList = () => {
   const [newTodo, setNewTodo] = useState('');
   const queryClient = useQueryClient();
 
-  const { isLoading, isError, error, data: todos } = useQuery(['todos'], getTodos);
+  const {
+    isLoading,
+    isError,
+    error,
+    data: todos,
+  } = useQuery(['todos'], getTodos, { select: (data) => data.sort((a, b) => b.id - a.id) });
 
   const addTodoMutation = useMutation(addTodo, {
     onSuccess: () => {
       // Invalidates the cache and refetch data
-      queryClient.invalidateQueries(['todos ']);
+      queryClient.invalidateQueries(['todos']);
     },
   });
 
   const updateTodoMutation = useMutation(updateTodo, {
     onSuccess: () => {
       // Invalidates the cache and refetch data
-      queryClient.invalidateQueries(['todos ']);
+      queryClient.invalidateQueries(['todos']);
     },
   });
 
   const deleteTodoMutation = useMutation(deleteTodo, {
     onSuccess: () => {
       // Invalidates the cache and refetch data
-      queryClient.invalidateQueries(['todos ']);
+      queryClient.invalidateQueries(['todos']);
     },
   });
 
@@ -62,8 +67,24 @@ const TodosList = () => {
   } else if (isError) {
     content = <p>c{error.message}</p>;
   } else {
-    console.log(todos);
-    content = JSON.stringify(todos);
+    content = todos.map((todo) => {
+      return (
+        <article key={todo.id}>
+          <div className='todo'>
+            <input
+              type='checkbox'
+              checked={todo.completed}
+              id={todo.id}
+              onChange={() => updateTodoMutation.mutate({ ...todo, completed: !todo.completed })}
+            />
+            <label htmlFor={todo.id}>{todo.title}</label>
+          </div>
+          <button className='trash' onClick={() => deleteTodoMutation.mutate({ id: todo.id })}>
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </article>
+      );
+    });
   }
 
   return (
